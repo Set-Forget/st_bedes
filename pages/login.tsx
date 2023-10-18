@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
+import Image from 'next/image';
 
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
@@ -7,17 +9,23 @@ import { useAuth } from '@/context/authContext';
 
 const LoginPage = () => { 
 
-    const { login, userType } = useAuth();
+    const { login, userType, setUserType } = useAuth();
 
-    const u = userType === 'student' ? 'dummy1@student.sbcm.co.uk' : 'yk_afo2007@yahoo.co.uk';
-    const p = userType === 'student' ? 'DdkU4p4rmOmebZ' : '814ha6mARnqN3L';
+    
 
-    const [ username, setUsername ] = useState(u);
-    const [ password, setPassword ] = useState(p);
+    const [ username, setUsername ] = useState('');
+    const [ password, setPassword ] = useState('');
     const [ usernameError, setUsernameError ] = useState('');
     const [ passwordError, setPasswordError ] = useState('');
     const [ fetching, setFetching ] = useState(false);
     const [ errorMessage, setErrorMessage ] = useState('');
+
+    useEffect(() => {
+        if(!userType) return;
+
+        setUsername(userType === 'student' ? 'dummy1@student.sbcm.co.uk' : 'yk_afo2007@yahoo.co.uk');
+        setPassword(userType === 'student' ? 'DdkU4p4rmOmebZ' : '814ha6mARnqN3L');
+    }, [ userType ]);
  
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -40,7 +48,6 @@ const LoginPage = () => {
         } else {
             setPasswordError('');
         }
-    
         
         if (trimUsername !== '' && trimPassword !== '') {
 
@@ -55,6 +62,35 @@ const LoginPage = () => {
             setFetching(false);
         }
     };
+
+    if(!userType) return (
+        <div className="min-h-screen w-screen flex align-items-center justify-content-center" style={{ backgroundColor: '#000' }}>
+            <div className="flex flex-column align-items-center w-full max-w-20rem" >
+                <div className='mb-5'>
+                    <Image
+                        src='/img/logo.png'
+                        alt='logo'
+                        width={250}
+                        height={250}
+                    />
+                </div>
+                <div className="flex flex-column w-full">
+                    <div 
+                        className="p-6 px-8 bg-white cursor-pointer border-round-2xl mb-5"
+                        onClick={() => setUserType('student')}
+                    >
+                        <p className='text-center text-2xl font-medium'>Student</p>
+                    </div>
+                    <div 
+                        className="p-6 px-8 bg-white cursor-pointer border-round-2xl"
+                        onClick={() => setUserType('parent')}
+                    >
+                        <p className='text-center text-2xl font-medium'>Parent</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 
     return (
         <AuthForm title='Welcome Back'>
@@ -115,6 +151,13 @@ const LoginPage = () => {
                     />
                 </div> */}
             </form>
+            <div className='flex justify-content-end'>
+                <Button 
+                    label={userType === 'parent' ? 'Student' : 'Parent'}
+                    severity='warning'
+                    onClick={() => setUserType(type => type === 'parent' ? 'student' : 'parent')}
+                />
+            </div>
         </AuthForm>
     );
 };

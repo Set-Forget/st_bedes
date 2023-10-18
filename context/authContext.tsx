@@ -24,7 +24,7 @@ const AuthProvider = ({ children }: Props) => {
 
     const [ loading, setLoading ] = useState(true);
     
-    const [ userType, setUserType ] = useState<null | 'student' | 'parent'>('student');
+    const [ userType, setUserType ] = useState<null | 'student' | 'parent'>(null);
 
     const [ user, setUser ] = useState<null | User>(null);
 

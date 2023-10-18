@@ -46,7 +46,7 @@ const Home = () => {
         const getData = async () => {
 
             const url = userType === 'student' ? `?action=getStudentQuestion&studentId=${user.student_id}` /* 4415 */ : 
-            `?action=getParentQuestion&parentId=${/*user.parent_id */20590}`;
+            `?action=getParentQuestion&parentId=${user.parent_id}`; // 20590
 
             const json = await fetchApi(url, {
                 method: 'GET'
