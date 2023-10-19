@@ -46,30 +46,6 @@ const TeacherList: React.FC<Props> = ({ questionnaire, selectedSubject, selectTe
                         />
                     )
                 })}
-                {/* <Selector 
-                    title='National History'
-                    width={100}
-                    hover
-                    className='mb-5'
-                />
-                <Selector 
-                    title='Math2BI'
-                    width={100}
-                    hover
-                    className='mb-5'
-                />
-                <Selector 
-                    title='English B'
-                    width={100}
-                    hover
-                    className='mb-5'
-                />
-                <Selector 
-                    title='Geography 2N'
-                    width={100}
-                    hover
-                    className='mb-5'
-                /> */}
             </div>
         </div>
     );

@@ -6,10 +6,7 @@ import { QuestionnaireKnobType } from '@/pages/home';
 
 interface Props {
     children: React.ReactNode
-    knobType: QuestionnaireKnobType
-    schoolProgressPercentage: number
-    teacherProgressPercentage: number
-    questionnaireProgressPercentage: number
+    knob: React.ReactNode
     headerTitle: string
     footerTitle: string | null
     footerAction: () => void
@@ -17,10 +14,7 @@ interface Props {
 
 const Layout: React.FC<Props> = ({ 
         children, 
-        knobType,  
-        schoolProgressPercentage,
-        teacherProgressPercentage,
-        questionnaireProgressPercentage,
+        knob,
         headerTitle, 
         footerTitle, 
         footerAction 
@@ -31,10 +25,7 @@ const Layout: React.FC<Props> = ({
             <div className='flex flex-column h-full'>
                 <Header 
                     title={headerTitle}
-                    knobType={knobType}
-                    schoolProgressPercentage={schoolProgressPercentage}
-                    teacherProgressPercentage={teacherProgressPercentage}
-                    questionnaireProgressPercentage={questionnaireProgressPercentage}
+                    knob={knob}
                 />
                 <div className='flex-1'>
                     {children}

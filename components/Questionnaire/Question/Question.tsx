@@ -10,7 +10,7 @@ interface Props extends QuestionInterface {
     updateValue: (value: string | undefined, id: number) => void
 }
 
-const Question: React.FC<Props> = ({ title, content, type, options, value, error, question_id, updateValue }) => {
+const Question: React.FC<Props> = ({ title, content, type, options, value, error, question_id, updateValue, is_answered }) => {
     
     const [ selectOptions, setSelectOptions ] = useState<string[]>([]);
 
@@ -28,6 +28,7 @@ const Question: React.FC<Props> = ({ title, content, type, options, value, error
 
 
     const updateValueHandler = (value: string | undefined) => {
+        if(is_answered) return;
         updateValue(value, question_id);
     }
 

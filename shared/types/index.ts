@@ -28,6 +28,7 @@ export interface Question {
     teacher_id?: number // only student
     title: string | null
     type: "select" | "text"
+    is_answered: boolean
 
     value?: string
     error?: boolean

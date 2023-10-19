@@ -26,6 +26,15 @@ const AuthProvider = ({ children }: Props) => {
     
     const [ userType, setUserType ] = useState<null | 'student' | 'parent'>(null);
 
+    const testuser = {
+        full_name: "Fictitious Tester, John",
+        student_id: 7351
+    }
+    const testparent = {
+        full_name: "Omotayo, Morenike",
+        parent_id: 30419
+    }
+
     const [ user, setUser ] = useState<null | User>(null);
 
     useEffect(() => {

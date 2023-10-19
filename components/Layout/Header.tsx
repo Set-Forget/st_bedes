@@ -11,44 +11,17 @@ import { QuestionnaireKnobType } from '@/pages/home';
 
 interface Props {
     title: string
-    knobType: QuestionnaireKnobType
-    schoolProgressPercentage: number
-    teacherProgressPercentage: number
-    questionnaireProgressPercentage: number
+    knob: React.ReactNode
 }
 
-const Header: React.FC<Props> = ({ title, knobType, schoolProgressPercentage, questionnaireProgressPercentage, teacherProgressPercentage }) => {
+const Header: React.FC<Props> = ({ title, knob }) => {
 
     const { user, logout } = useAuth();
-
-    const getKnob = useMemo(() => {
-        if(knobType === 'questionnaire') return (
-            <Knob 
-                title='Survey progress'
-                value={questionnaireProgressPercentage} 
-            />
-        )
-
-        if(knobType === 'overall') return (
-            <>
-                <Knob 
-                    title='School progress'
-                    value={schoolProgressPercentage}
-                    className='mr-5'
-                />
-                <Knob 
-                    title='Teacher progress'
-                    value={teacherProgressPercentage}
-                />
-            </>
-        )
-
-    }, [ knobType, questionnaireProgressPercentage, schoolProgressPercentage, teacherProgressPercentage ]);
 
     return (
         <div className='flex justify-content-between'>
             <div className='flex mr-8'>
-                {getKnob}
+                {knob}
             </div>
             <div className='flex flex-column ml-8'>
                 <Selector 

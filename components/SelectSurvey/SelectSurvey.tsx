@@ -1,29 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Selector from '@/components/Selector/Selector';
 
+import { Questionnaire } from '@/shared/types';
+
 interface Props {
-    pending: () => void
+    questionnaire: Questionnaire
+    emptyMessage: string
+    selectHandler: (value: string) => void
 }
 
-const SelectSurvey: React.FC<Props> = ({ pending }) => {
+const SubjectChildrenList: React.FC<Props> = ({ questionnaire, emptyMessage, selectHandler }) => {
+
+    const isEmpty = Object.keys(questionnaire).length === 0;
+
     return (
-        <div className="w-full flex flex-wrap">
-            <Selector 
-                title='Pending Surveys'
-                width={50}
-                hover
-                className='mb-5'
-                onClick={pending}
-            />
-            <Selector 
-                title='Finished Surveys'
-                width={50}
-                hover
-                className='mb-5'
-            />
+        <div className="w-full flex flex-wrap py-8">
+            {isEmpty && <p className='text-3xl font-medium'>{emptyMessage}</p> }
+            {Object.keys(questionnaire).map(item => {
+
+                return (
+                    <Selector 
+                        key={item}
+                        title={item}
+                        width={50}
+                        hover
+                        className='mb-5'
+                        onClick={() => selectHandler(item)}
+                    />
+                );
+            })}
         </div>
     );
 };
 
-export default SelectSurvey;
+export default SubjectChildrenList;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
@@ -14,13 +14,15 @@ import { useAuth } from '@/context/authContext';
 
 interface Props {
     questions: Question[]
+    isAnswered: boolean
+    updateCompletedQuestion: (questionToMove: Question) => void
     updateProgress: React.Dispatch<React.SetStateAction<number>>
     isFinished: boolean
     finish: () => void
     reset: () => void
 }
 
-const Questionnaire: React.FC<Props> = ({ questions, updateProgress, isFinished, finish, reset }) => {
+const Questionnaire: React.FC<Props> = ({ questions, isAnswered, updateCompletedQuestion, updateProgress, isFinished, finish, reset }) => {
 
     const { userType } = useAuth();
 
@@ -147,6 +149,8 @@ const Questionnaire: React.FC<Props> = ({ questions, updateProgress, isFinished,
     }
 
     const submitHandler = async () => {
+
+        if(isAnswered) return;
         if(checkForErrors()) return false;
         
         if(fetching) return;
@@ -206,7 +210,14 @@ const Questionnaire: React.FC<Props> = ({ questions, updateProgress, isFinished,
             });
         }
 
-        if(success) finish();
+        if(success) {
+
+            questionnaireQuestions.forEach(question => {
+                updateCompletedQuestion(question);
+            });
+    
+            finish();
+        }
     }
 
     const finishedLayout = (
@@ -242,6 +253,7 @@ const Questionnaire: React.FC<Props> = ({ questions, updateProgress, isFinished,
                                 <div className='align-self-end mt-auto mb-3'>
                                     <Button 
                                         label={!fetching ? 'Submit' : 'Loading...'}
+                                        disabled={isAnswered}
                                         onClick={submitHandler}
                                         loading={fetching}
                                     />
