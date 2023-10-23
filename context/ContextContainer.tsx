@@ -9,9 +9,7 @@ interface Props {
 export const ContextContainer: React.FC<Props> = ({ children}) => {
 
     return (
-        <AuthProvider 
-
-        >
+        <AuthProvider>
             {children}
         </AuthProvider>
     );

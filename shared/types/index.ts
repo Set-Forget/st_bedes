@@ -1,19 +1,13 @@
-// type ComponentType = 'open-question' | 'options' | 'description' | 'break'
+type ComponentType = 'open-question' | 'options' | 'description' | 'break'
 
-// export interface Component {
-//     type: ComponentType
-//     title?: string
-//     page?: number
-//     id?: number
-//     value?: string
-//     error?: boolean
-// }
-
-// export interface Question extends Component {
-//     options?: string[]
-//     value?: string
-//     error?: boolean
-// }
+export interface Component {
+    type: ComponentType
+    title?: string
+    page?: number
+    id?: number
+    value?: string
+    error?: boolean
+}
 
 export interface Question {
     content: string

@@ -25,7 +25,7 @@ const SubjectChildrenList: React.FC<Props> = ({ questionnaire, emptyMessage, sel
                         title={item}
                         width={50}
                         hover
-                        className='mb-5'
+                        className='mb-4'
                         onClick={() => selectHandler(item)}
                     />
                 );

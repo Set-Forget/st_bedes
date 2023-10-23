@@ -19,7 +19,7 @@ const Header: React.FC<Props> = ({ title, knob }) => {
     const { user, logout } = useAuth();
 
     return (
-        <div className='flex justify-content-between'>
+        <div className='flex justify-content-between bg-red-100'>
             <div className='flex mr-8'>
                 {knob}
             </div>
