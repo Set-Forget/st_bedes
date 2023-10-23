@@ -50,32 +50,34 @@ const Home = () => {
   const [selectedSubject, setSelectedSubject] = useState<null | string>(null); // for student
   const [selectedChild, setSelectedChild] = useState<null | string>(null); // for parent
   const [selectedTeacher, setSelectedTeacher] = useState<null | string>(null); // for student
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const getQuestions = useCallback(async () => {
-    // get questions from server, called only once
-
+    // Show loading state
+    setStep("preparing-questions");
+  
     if (!user || !userType) return;
-
+  
     const url =
       userType === "student"
         ? `?action=getStudentQuestion&studentId=${user.student_id}`
         : `?action=getParentQuestion&parentId=${user.parent_id}`;
-
+  
     const json = await fetchApi(url, {
       method: "GET",
     });
-
+  
     const questions = json.response.questions;
     setQuestions(questions);
-
+  
+    // Hide loading state
     setStep("selecting");
   }, [user, userType]);
+  
 
   useEffect(() => {
     getQuestions();
-    setStep("selecting");
-  }, [getQuestions, refreshKey]);
+    // setStep("selecting");
+  }, [getQuestions]);
 
   // const handleRefresh = () => {
   //   setRefreshKey((prevKey) => prevKey + 1);

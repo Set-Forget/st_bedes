@@ -17,7 +17,9 @@ const SubjectChildrenList: React.FC<Props> = ({ questionnaire, emptyMessage, sel
     return (
         <div className="w-full flex flex-wrap py-8">
             {isEmpty && <p className='text-3xl font-medium'>{emptyMessage}</p> }
-            {Object.keys(questionnaire).map(item => {
+            {Object.keys(questionnaire)
+            .filter(key => key && key !== "undefined" && questionnaire[key] && questionnaire[key].length > 0)
+            .map(item => {
 
                 return (
                     <Selector 
@@ -33,5 +35,6 @@ const SubjectChildrenList: React.FC<Props> = ({ questionnaire, emptyMessage, sel
         </div>
     );
 };
+
 
 export default SubjectChildrenList;
