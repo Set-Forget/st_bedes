@@ -15,7 +15,6 @@ import {
 } from "@/shared/types";
 import SelectSurveyType from "@/components/SelectSurveyType/SelectSurveyType";
 import { useAuth } from "@/context/authContext";
-import { log } from "console";
 
 export type QuestionnaireStep =
   | "preparing-questions"
@@ -51,37 +50,74 @@ const Home = () => {
   const [selectedChild, setSelectedChild] = useState<null | string>(null); // for parent
   const [selectedTeacher, setSelectedTeacher] = useState<null | string>(null); // for student
 
+  const [schoolQuestionnaire, setSchoolQuestionnaire] = useState<QuestionnaireInterface>({});
+
+
   const getQuestions = useCallback(async () => {
     // Show loading state
     setStep("preparing-questions");
-  
+
     if (!user || !userType) return;
-  
-    const url =
-      userType === "student"
-        ? `?action=getStudentQuestion&studentId=${user.student_id}`
-        : `?action=getParentQuestion&parentId=${user.parent_id}`;
-  
+
+    let url = '';
+    if (userType === "student") {
+      url = `?action=getStudentQuestion&studentId=${user.student_id}`;
+    } else {
+      url = `?action=getParentQuestion&parentId=${user.parent_id}`;
+    }
+
     const json = await fetchApi(url, {
       method: "GET",
     });
-  
-    const questions = json.response.questions;
-    setQuestions(questions);
-  
+
+    const hasSchoolSection = json.response.questions.some((question: any) => question.section === 'School');
+    console.log(hasSchoolSection); // true if any question has section 'School', otherwise false
+
+    // Filter questions based on the section
+    const filteredQuestions = json.response.questions.filter((question: any) => {
+      return question.section === "School" || question.section === "Academic";
+    });
+
+    setQuestions(filteredQuestions);
+
     // Hide loading state
     setStep("selecting");
   }, [user, userType]);
-  
 
+  // specifically creates a separate school questionnaire for students
+  const makeSchoolQuestionnaire = useCallback(
+    (questions: Question[]) => {
+      const schoolQuestionnaire: QuestionnaireInterface = {};
+
+      const schoolQuestions = questions.filter(q => q.section === 'School');
+      console.log('School Questions:', schoolQuestions);
+
+      schoolQuestions.forEach((obj: Question) => {
+        const key = 'School'; // Since we're grouping by School
+
+        if (!schoolQuestionnaire[key]) {
+          schoolQuestionnaire[key] = [];
+        }
+
+        schoolQuestionnaire[key].push(obj);
+      });
+
+      return schoolQuestionnaire;
+    },
+    []
+  );
+
+  // First useEffect to fetch the questions
   useEffect(() => {
     getQuestions();
-    // setStep("selecting");
   }, [getQuestions]);
 
-  // const handleRefresh = () => {
-  //   setRefreshKey((prevKey) => prevKey + 1);
-  // };
+  // Second useEffect to process the questions once they're fetched
+  useEffect(() => {
+    const schoolQ = makeSchoolQuestionnaire(questions);
+    setSchoolQuestionnaire(schoolQ);
+  }, [questions, makeSchoolQuestionnaire]);
+
 
   useEffect(() => {
     // modify questions based on is_answered field, updated when questionnaire is finished
@@ -305,11 +341,13 @@ const Home = () => {
           );
         } else {
           const questionnaire = makeQuestionnaire(questions);
+          const schoolQuestionnaire = makeSchoolQuestionnaire(questions);
+          const combinedQuestionnaire = { ...questionnaire, ...schoolQuestionnaire };
 
           if (selectingStep === "teacher") {
             return (
               <TeacherList
-                questionnaire={questionnaire}
+                questionnaire={combinedQuestionnaire}
                 selectedSubject={selectedSubject!}
                 selectTeacherHandler={selectTeacherHandler}
               />
@@ -317,10 +355,10 @@ const Home = () => {
           } else {
             return (
               <SelectSurvey
-                questionnaire={questionnaire}
+                questionnaire={combinedQuestionnaire}
                 emptyMessage={
                   selectedSurveyType === "finished"
-                    ? "You dont have pending surveys."
+                    ? "You dont have finished surveys."
                     : "You dont have pending surveys."
                 }
                 selectHandler={
@@ -336,13 +374,12 @@ const Home = () => {
       case "finished":
         return (
           <Questionnaire
-            questions={questionnaireQuestions}
+            questions={selectedSubject === 'School' ? schoolQuestionnaire['School'] : questionnaireQuestions}
             isAnswered={selectedSurveyType === "finished"}
             updateCompletedQuestion={updateCompletedQuestion}
             updateProgress={setQuestionnaireProgressPercentage}
             isFinished={step === "finished"}
             finish={() => {
-              console.log("Finish function is being called");
               setStep("finished");
             }}
             reset={resetHandler}

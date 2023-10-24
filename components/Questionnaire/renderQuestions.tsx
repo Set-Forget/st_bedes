@@ -2,39 +2,24 @@ import type { Question as QuestionInterface } from '@/shared/types';
 import Description from './Description/Description';
 import Question from './Question/Question';
 
-export default function renderQuestions(questions: QuestionInterface[], page: number, updateValue: (value: string | undefined, id: number) => void): React.ReactNode {
+// Define the sections for each user type
+const studentSections = ['School', 'Academic'];
+const parentSections = ['Section A: Safety, Welfare and Personal Development', 'Section B: The quality of education', 'Section C'];
 
-    return questions.map(question => {
+export default function renderQuestions(questions: QuestionInterface[], userType: string | null, updateValue: (value: string | undefined, id: number) => void): React.ReactNode {
 
-        return (
-            <Question 
-                key={question.question_id}
-                {...question}
-                updateValue={updateValue}
-            />
-        )
+    // Determine the sections to use based on the user type
+    const sectionsToShow = userType === 'student' ? studentSections : parentSections;
 
-        // if(component.page! === page) {
-        //     if(component.type === 'description') {
-        //         return (
-        //             <Description key={index}>
-        //                 {component.title}
-        //             </Description>
-        //         )
-        //     }
-    
-        //     if(component.type === 'open-question' || component.type === 'options') {
-        //         return (
-        //             <Question 
-        //                 key={index}
-        //                 {...component}
-        //                 updateValue={updateValue}
-        //             />
-        //         )
-        //     }
-        // }
+    // Filter the questions based on the sections to show
+    const filteredQuestions = questions.filter(question => sectionsToShow.includes(question.section));
 
-        // return null;
-    });
-
+    // Render the filtered questions
+    return filteredQuestions.map(question => (
+        <Question 
+            key={question.question_id}
+            {...question}
+            updateValue={updateValue}
+        />
+    ));
 }

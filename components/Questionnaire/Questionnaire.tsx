@@ -162,13 +162,15 @@ const Questionnaire: React.FC<Props> = ({
     });
   };
 
+  const BASE_URL = "https://script.google.com/macros/s/AKfycbzOQ-TAlZ5No2x2Hr8x6yLViRbwRhIMvv4v7d3hQa0n8FYjZEBZPSci0vT74m5l-kYU2g/exec";
+
   const submitHandler = async () => {
     if (isAnswered) return;
     if (checkForErrors()) return false;
-
+  
     if (fetching) return;
     setFetching(true);
-
+  
     interface StudentQuestionAnswer {
       set_id: number;
       question_id: number;
@@ -176,55 +178,58 @@ const Questionnaire: React.FC<Props> = ({
       teacher_id: number;
       answer: string;
     }
-
+  
     const studentAnswers: StudentQuestionAnswer[] = [
       ...questionnaireQuestions,
     ].map((question) => {
-      // questions and answers depend on the set_id, question_id, student_id, and teacher_id
-
       const { set_id, question_id, student_id, teacher_id, value } = question;
-
-      return {
+  
+      let answerObj: Partial<StudentQuestionAnswer> = {
         set_id,
         question_id,
         student_id: student_id!,
-        teacher_id: teacher_id!,
         answer: value!,
       };
+  
+      if (teacher_id) {
+        answerObj.teacher_id = teacher_id;
+      }
+  
+      return answerObj as StudentQuestionAnswer;
     });
-
+  
     interface ParentQuestionAnswer {
       question_id: number;
       student_id: number;
       answer: string;
     }
-
+  
     const parentAnswers: ParentQuestionAnswer[] = [
       ...questionnaireQuestions,
     ].map((question) => {
-      // questions and answers depend on the set_id, question_id, student_id, and teacher_id
-
       const { question_id, student_id, value } = question;
-
+  
       return { question_id, student_id: student_id!, answer: value! };
     });
 
-    const answers = userType! === "student" ? studentAnswers : parentAnswers;
+    const endpoint = userType === "student" ? "saveStudentAnswers" : "saveParentAnswers";
+  
+    //checkear esto
     const json = await fetchApi(``, {
       method: "POST",
       body: JSON.stringify({
         action:
-          userType === "student" ? "saveStudentAnswers" : "saveParentAnswers",
-        data: answers,
+          endpoint,
+        data: studentAnswers,
       }),
     });
-
-    // {status: 200, message: 'Student answers saved successfully.'}
-
+  
+    console.log("API Response:", json); // Enhanced logging
+  
     const success = json.status === 200;
-
+  
     setFetching(false);
-
+  
     if (toast.current) {
       toast.current.show({
         severity: success ? "success" : "error",
@@ -233,20 +238,19 @@ const Questionnaire: React.FC<Props> = ({
         life: 6000,
       });
     }
-
+  
     if (success) {
-        // if (onSurveyCompleted) {
-        //     onSurveyCompleted();
-        // }
-        
       questionnaireQuestions.forEach((question) => {
         updateCompletedQuestion(question);
       });
-
+  
       finish();
       refetchSurveys();
+    } else {
+      console.error("Submission Error:", json.message); // Enhanced logging
     }
   };
+  
 
   const finishedLayout = (
     <div className="w-full h-full flex justify-content-center align-items-center">
@@ -268,11 +272,8 @@ const Questionnaire: React.FC<Props> = ({
         {!isFinished ? (
           <>
             <div className="flex flex-column flex-1">
-              {renderQuestions(
-                questionnaireQuestions,
-                page,
-                updateValueHandler
-              )}
+              {renderQuestions(questionnaireQuestions, userType, updateValueHandler)}
+
               {isLastPage && (
                 <div className="align-self-end mt-auto mb-3">
                   <Button

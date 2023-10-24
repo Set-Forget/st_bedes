@@ -15,17 +15,18 @@ const Question: React.FC<Props> = ({ title, content, type, options, value, error
     const [ selectOptions, setSelectOptions ] = useState<string[]>([]);
 
     useEffect(() => {
-        // API response looks like this: ['Agree','Not sure','Disagree']
-
         if(!options) return; // on text question
-
-        const validJSONString = options.replace(/'/g, '"')
-
-        const json = JSON.parse(`${validJSONString}`);
-
-        setSelectOptions(json);
+    
+        const validJSONString = options.replace(/'/g, '"');
+    
+        try {
+            const json = JSON.parse(validJSONString);
+            setSelectOptions(json);
+        } catch (error) {
+            console.log("Error parsing options:", "Original string:", options);
+        }
     }, [ options ]);
-
+    
 
     const updateValueHandler = (value: string | undefined) => {
         if(is_answered) return;

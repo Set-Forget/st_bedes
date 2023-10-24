@@ -10,7 +10,6 @@ interface Props {
 }
 
 const TeacherList: React.FC<Props> = ({ questionnaire, selectedSubject, selectTeacherHandler }) => {
-
     const data = questionnaire[selectedSubject];
 
     const teacherData: Record<string, Question[]> = {};
@@ -18,7 +17,7 @@ const TeacherList: React.FC<Props> = ({ questionnaire, selectedSubject, selectTe
     // Check if data is defined before iterating over it
     if (data && Array.isArray(data)) {
         data.forEach((obj) => {
-            const key = obj.teacher_full_name!;
+            const key = obj.teacher_full_name || obj.section; // Use section if teacher_full_name is not available
           
             if (!teacherData[key]) {
               teacherData[key] = [];
