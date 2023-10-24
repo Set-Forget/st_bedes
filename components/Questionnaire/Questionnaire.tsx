@@ -177,11 +177,12 @@ const Questionnaire: React.FC<Props> = ({
       student_id: number;
       teacher_id: number;
       answer: string;
+      row_number: number;
     }
   
     const studentAnswers: StudentQuestionAnswer[] = [
       ...questionnaireQuestions,
-    ].map((question) => {
+    ].map((question, index) => {
       const { set_id, question_id, student_id, teacher_id, value } = question;
   
       let answerObj: Partial<StudentQuestionAnswer> = {
@@ -189,6 +190,7 @@ const Questionnaire: React.FC<Props> = ({
         question_id,
         student_id: student_id!,
         answer: value!,
+        row_number: index + 1,
       };
   
       if (teacher_id) {
