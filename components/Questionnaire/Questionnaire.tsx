@@ -167,71 +167,57 @@ const Questionnaire: React.FC<Props> = ({
   const submitHandler = async () => {
     if (isAnswered) return;
     if (checkForErrors()) return false;
-  
+
     if (fetching) return;
     setFetching(true);
-  
-    interface StudentQuestionAnswer {
-      set_id: number;
-      question_id: number;
-      student_id: number;
-      teacher_id: number;
-      answer: string;
+
+    const endpoint = "saveStudentAnswers"; 
+
+    type AnswerObject = {
       row_number: number;
-    }
-  
-    const studentAnswers: StudentQuestionAnswer[] = [
-      ...questionnaireQuestions,
-    ].map((question, index) => {
+      student_id: number;
+      question_id: number;
+      answer: string;
+      teacher_id?: number; 
+    };
+
+    // Construct the answers to send
+    const answersToSend = questionnaireQuestions.map((question, index) => {
       const { set_id, question_id, student_id, teacher_id, value } = question;
-  
-      let answerObj: Partial<StudentQuestionAnswer> = {
-        set_id,
-        question_id,
-        student_id: student_id!,
-        answer: value!,
+
+      let answerObj: AnswerObject = {
         row_number: index + 1,
+        student_id: student_id!,
+        question_id,
+        answer: value!,
+
       };
-  
+
       if (teacher_id) {
         answerObj.teacher_id = teacher_id;
       }
-  
-      return answerObj as StudentQuestionAnswer;
-    });
-  
-    interface ParentQuestionAnswer {
-      question_id: number;
-      student_id: number;
-      answer: string;
-    }
-  
-    const parentAnswers: ParentQuestionAnswer[] = [
-      ...questionnaireQuestions,
-    ].map((question) => {
-      const { question_id, student_id, value } = question;
-  
-      return { question_id, student_id: student_id!, answer: value! };
+
+      return answerObj;
     });
 
-    const endpoint = userType === "student" ? "saveStudentAnswers" : "saveParentAnswers";
-  
-    //checkear esto
-    const json = await fetchApi(``, {
+    const objectBody = {
+      action: endpoint,
+      data: answersToSend,
+    };
+
+    // Use the API_URL from the fetchApi utility to construct the full endpoint URL
+    const json = await fetchApi(endpoint, {
       method: "POST",
-      body: JSON.stringify({
-        action:
-          endpoint,
-        data: studentAnswers,
-      }),
+      body: JSON.stringify(objectBody),
     });
-  
+
+    console.log("API Request Body:", objectBody);
     console.log("API Response:", json); // Enhanced logging
-  
+
     const success = json.status === 200;
-  
+
     setFetching(false);
-  
+
     if (toast.current) {
       toast.current.show({
         severity: success ? "success" : "error",
@@ -240,19 +226,19 @@ const Questionnaire: React.FC<Props> = ({
         life: 6000,
       });
     }
-  
+
     if (success) {
       questionnaireQuestions.forEach((question) => {
         updateCompletedQuestion(question);
       });
-  
+
       finish();
       refetchSurveys();
     } else {
       console.error("Submission Error:", json.message); // Enhanced logging
     }
-  };
-  
+};
+
 
   const finishedLayout = (
     <div className="w-full h-full flex justify-content-center align-items-center">

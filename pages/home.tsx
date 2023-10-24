@@ -70,8 +70,7 @@ const Home = () => {
       method: "GET",
     });
 
-    const hasSchoolSection = json.response.questions.some((question: any) => question.section === 'School');
-    console.log(hasSchoolSection); // true if any question has section 'School', otherwise false
+    console.log("Fetched questions:", json);
 
     // Filter questions based on the section
     const filteredQuestions = json.response.questions.filter((question: any) => {
@@ -90,10 +89,12 @@ const Home = () => {
       const schoolQuestionnaire: QuestionnaireInterface = {};
 
       const schoolQuestions = questions.filter(q => q.section === 'School');
-      console.log('School Questions:', schoolQuestions);
+      const academicQuestions = questions.filter(q => q.section === 'Academic');
+      console.log('Academic:', academicQuestions);
+      console.log('School:', schoolQuestions)
 
       schoolQuestions.forEach((obj: Question) => {
-        const key = 'School'; // Since we're grouping by School
+        const key = 'School';
 
         if (!schoolQuestionnaire[key]) {
           schoolQuestionnaire[key] = [];

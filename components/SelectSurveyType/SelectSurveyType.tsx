@@ -15,17 +15,24 @@ const SelectSurvey: React.FC<Props> = ({ pending, finished }) => {
                 width={50}
                 hover
                 className='mb-5'
-                onClick={pending}
+                onClick={() => {
+                    console.log("Pending button clicked");
+                    pending();
+                }}
             />
             <Selector 
                 title='Finished Surveys'
                 width={50}
                 hover
                 className='mb-5'
-                onClick={finished}
+                onClick={() => {
+                    console.log("Finished button clicked");
+                    finished();
+                }}
             />
         </div>
     );
 };
+
 
 export default SelectSurvey;

@@ -13,6 +13,8 @@ interface Props {
 const SubjectChildrenList: React.FC<Props> = ({ questionnaire, emptyMessage, selectHandler }) => {
 
     const isEmpty = Object.keys(questionnaire).length === 0;
+    
+    console.log("Received questionnaire data:", questionnaire);
 
     return (
         <div className="w-full flex flex-wrap py-8">
