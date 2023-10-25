@@ -28,13 +28,8 @@ const fetchApi = async <T = any>(url: string, options: RequestOptions) => {
         
         const json: ApiResponse<T> = await response.json();
 
-        if (!response.ok) {
-            console.error("API Response Error:", json);
-        }
-
         return json;
     } catch(err) {
-        console.error("API Fetch Error:", err);
         const failResponse: ApiResponse = {
             status: 400,
             response: undefined
@@ -43,6 +38,5 @@ const fetchApi = async <T = any>(url: string, options: RequestOptions) => {
         return failResponse;
     }
 };
-
 
 export default fetchApi;
